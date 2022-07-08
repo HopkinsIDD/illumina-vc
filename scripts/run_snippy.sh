@@ -9,19 +9,19 @@ date
 
 # ---------------- Input Paramters and Files  ---------------- #
 
+# sample name 
+SAMPLENAME=$1
+
 # path to project directory 
-DIR=$1
+DIR=$2
 DIR=${DIR%/} # remove trailing slash from directory name if necessary
 
 # path to contigs file
-CONTIG=$2
+CONTIG=$3
 
 # path to snippy output directory
-OUTPUT=$3
+OUTPUT=$4
 OUTPUT=${OUTPUT%/}
-
-# sample name 
-SAMPLENAME=$4
 
 # number of available cores
 NUM_CORES=$5

@@ -16,14 +16,14 @@ import pysam
 from Bio import SeqIO
 
 
-
-FASTQ_DIR = sys.argv[1] # absolute path of directory containing raw sequencing data for all samples
-FASTQ_DIR = FASTQ_DIR.rstrip('/') # trim '/' if necessary 
+NAME = sys.argv[1] # sample name
 
 DIR = sys.argv[2] # This must be the same project directory as in other scripts
 DIR = DIR.rstrip('/') # trim '/' if necessary 
 
-NAME = sys.argv[3] # sample name
+FASTQ_DIR = sys.argv[3] # absolute path of directory containing raw sequencing data for all samples
+FASTQ_DIR = FASTQ_DIR.rstrip('/') # trim '/' if necessary 
+
 NUM_LANE = sys.argv[4] # number of lanes
 
 OUTPUT_DIR = sys.argv[5] # absolute path of directory for reading metrics flie

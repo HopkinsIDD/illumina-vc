@@ -9,16 +9,16 @@ set -o pipefail
 
 # ---------------- Input Paramters and Files  ---------------- #
 
+# sample name 
+SAMPLENAME=$1
+
 # path to project directory (should be consistent for all scripts)
-DIR=$1
+DIR=$2
 DIR=${DIR%/} # remove trailing slash from directory name if necessary
 
 # path to FASTQ data
-FASTQ=$2
+FASTQ=$3
 FASTQ=${FASTQ%/} # remove trailing slash from directory name if necessary
-
-# sample name 
-SAMPLENAME=$3
 
 # indicate number of lanes to merge data over
 LANES=$4
@@ -26,11 +26,15 @@ LANES=$4
 # number of available cores
 NUM_CORES=$5
 
-# path to picard jar file
-PICARD_PATH=$6 
-
 # path to reference genome
-REF_GENOME=$7
+REF_GENOME=$6
+
+# path to picard jar file
+PICARD_PATH=$7 
+
+# calculate alignment statistics for merged bam
+
+ALIGN_STATS=$8
 
 
 cd $DIR
@@ -179,16 +183,21 @@ fi
 
 
 # calculate alignment statistics for merged bam (optional)
-# if [ ! -f $DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out ]; then
-# 	samtools flagstat $DIR/02_merged/$SAMPLENAME.merged.mkdup.bam > \
-# 	$DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
-# 	touch check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat
-# elif [ ! -e check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat ]; then
-# 	rm $DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
-# 	samtools flagstat $DIR/02_merged/$SAMPLENAME.merged.mkdup.bam > \
-# 	$DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
-# 	touch check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat
-# fi
+
+if [ $ALIGN_STATS -eq 1 ]; then
+
+	if [ ! -f $DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out ]; then
+		samtools flagstat $DIR/02_merged/$SAMPLENAME.merged.mkdup.bam > \
+		$DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
+		touch check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat
+	elif [ ! -e check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat ]; then
+		rm $DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
+		samtools flagstat $DIR/02_merged/$SAMPLENAME.merged.mkdup.bam > \
+		$DIR/02_merged/$SAMPLENAME.merged.mkdup.stats.out
+		touch check_tmp_align/.$SAMPLENAME\_merge_mkdup_stat
+	fi
+
+fi
 
 printf "%s mapped to refernce genome" "$SAMPLENAME"
 date

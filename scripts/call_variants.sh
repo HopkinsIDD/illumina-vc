@@ -9,29 +9,29 @@ set -o pipefail
 
 # ---------------- Input Paramters and Files  ---------------- #
 
-# path to project directory (should be consistent for all scripts)
-DIR=$1
-DIR=${DIR%/} # remove trailing slash from directory name if necessary
-
 # sample name (to be run in parallel for multiple samples)
-SAMPLENAME=$2
+SAMPLENAME=$1
+
+# path to project directory (should be consistent for all scripts)
+DIR=$2
+DIR=${DIR%/} # remove trailing slash from directory name if necessary
 
 # path to input bam file
 # If you have run 'align_reference.sh' 
 # This file should be in 02_merged and with a suffix '.merged.mkdup.bam'
 BAM=$3
 
-# path to reference genome
-REF_GENOME=$3
-
 # number of available cores
 NUM_CORES=$4
 
+# path to reference genome
+REF_GENOME=$5
+
 
 # set desired variant calling parameters
-SNP_SUPPORT=$5 # required percent(0-1) of mapped reads to support alternate allele
-REQ_DEPTH=$6 # required at least total depth
-REQ_STRAND_DEPTH=$7 # required at least the number of reads matching alternate allele per strand
+SNP_SUPPORT=$6 # required percent(0-1) of mapped reads to support alternate allele
+REQ_DEPTH=$7 # required at least total depth
+REQ_STRAND_DEPTH=$8 # required at least the number of reads matching alternate allele per strand
 
 
 cd $DIR
@@ -190,7 +190,7 @@ fi
 
 
 # check length of sequences
-RESULT_LENGTH=$(awk '/^>/ {if (seqlen){print seqlen}; print ;seqlen=0;next; } \
+RESULT_LENGTH=$(awk '/^>/ {if (seqlen){print seqlen};seqlen=0;next; } \
 				{ seqlen += length($0)}END{print seqlen}' \
 				$DIR/04_assembly/$SAMPLENAME.bcftools.fasta)
 

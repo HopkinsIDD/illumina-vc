@@ -84,12 +84,12 @@ done
 echo "installing python packages"
 
 # intall python packages with pip
-sudo -H -u minion python3 -m pip install --upgrade --user pip
-sudo -H -u minion python3 -m pip install --upgrade --user setuptools
+sudo -H -u Illumina python3 -m pip install --upgrade --user pip
+sudo -H -u Illumina python3 -m pip install --upgrade --user setuptools
 PYTHON_PACKAGES=(numpy pandas biopython pysam)
 
 for PKG in ${PYTHON_PACKAGES[@]}; do
-  sudo -H -u minion python3 -m pip install --user $PKG
+  sudo -H -u Illumina python3 -m pip install --user $PKG
 done
 
 

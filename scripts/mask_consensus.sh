@@ -7,12 +7,12 @@ set -o pipefail
 
 # ---------------- Input Paramters and Files  ---------------- #
 
-# path to project directory (should be consistent for all scripts)
-DIR=$1
-DIR=${DIR%/} # remove trailing slash from directory name if necessary
-
 # sample name (to be run in parallel for multiple samples)
-SAMPLENAME=$2
+SAMPLENAME=$1
+
+# path to project directory (should be consistent for all scripts)
+DIR=$2
+DIR=${DIR%/} # remove trailing slash from directory name if necessary
 
 # path to assembled genome fasta file
 # If you have run 'align_reference.sh' and 'call_variant.sh'
@@ -42,9 +42,10 @@ date
 
 header=$(head -1 $FASTA)
 FASTA_DIR=${FASTA%/*}
+var=">$chrom"
 
 if [ ! -f $FASTA_DIR/$SAMPLENAME.mask.fasta ]; then
-	sed -i "1s/.*/$chrom/" $FASTA # temporarily change fasta header to match gff
+	sed -i "1s/.*/$var/" $FASTA # temporarily change fasta header to match gff
 	bedtools maskfasta -fi $FASTA \
 	-bed $RECOMBMASK -fo $FASTA_DIR/$SAMPLENAME.mask.fasta
 	sed -i "1s/.*/$header/" $FASTA # change fasta header back to sample name
@@ -52,7 +53,7 @@ if [ ! -f $FASTA_DIR/$SAMPLENAME.mask.fasta ]; then
 	touch check_tmp_mask/.$SAMPLENAME.recomb_mask_consensus
 elif [ ! -e check_tmp_mask/.$SAMPLENAME.recomb_mask_consensus ]; then
 	rm $FASTA_DIR/$SAMPLENAME.mask.fasta
-	sed -i "1s/.*/$chrom/" $FASTA # temporarily change fasta header to match gff
+	sed -i "1s/.*/$var/" $FASTA # temporarily change fasta header to match gff
 	bedtools maskfasta -fi $FASTA \
 	-bed $RECOMBMASK -fo $FASTA_DIR/$SAMPLENAME.mask.fasta
 	sed -i "1s/.*/$header/" $FASTA # change fasta header back to sample name
