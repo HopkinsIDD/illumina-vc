@@ -24,7 +24,7 @@ DIR = DIR.rstrip('/') # trim '/' if necessary
 FASTQ_DIR = sys.argv[3] # absolute path of directory containing raw sequencing data for all samples
 FASTQ_DIR = FASTQ_DIR.rstrip('/') # trim '/' if necessary 
 
-NUM_LANE = sys.argv[4] # number of lanes
+NUM_LANE = int(sys.argv[4]) # number of lanes
 
 OUTPUT_DIR = sys.argv[5] # absolute path of directory for reading metrics flie
 OUTPUT_DIR = OUTPUT_DIR.rstrip('/') # trim '/' if necessary 
@@ -59,7 +59,7 @@ fastq_path = [FASTQ_DIR + "/" + NAME + "_L00" + str(i) + "_R" + str(j) + "_001.f
 ##CAUTION: The bam file naming convention here followed those in 'align_reference.sh', those should be customized if necessary
 bam_unmerged_path = [DIR + "/01_mapped/" + NAME + "_L00" + str(i) + ".mapped.bam" for i in range(1,NUM_LANE+1)]
 bam_merged_path = DIR + "/02_merged/" + NAME + ".merged.mkdup.bam"
-depth_path = DIR + "/02_merged/" + NAME + ".merged.mkdup.depth"
+depth_path = DIR + "/02_merged/" + NAME + ".depth"
 genome_path = DIR + "/04_assembly/" + NAME + ".bcftools.fasta"
 
 
@@ -67,9 +67,9 @@ genome_path = DIR + "/04_assembly/" + NAME + ".bcftools.fasta"
 reads_filesize = sum([os.path.getsize(fq) for fq in fastq_path])
 
 # get mapping metrics from pysam
-reads_unmapped =  sum([pysam.view("-c","-f","4",bam_unmerged) for bam_unmerged in bam_unmerged_path]) 
-reads_mapped = pysam.view("-c","-F","4",bam_merged_path)
-reads_mapped_rmdup = pysam.view("-c","-F","1028",bam_merged_path)
+reads_unmapped =  sum([int(pysam.view("-c","-f","4",bam_unmerged).rstrip()) for bam_unmerged in bam_unmerged_path]) 
+reads_mapped = int(pysam.view("-c","-F","4",bam_merged_path).rstrip())
+reads_mapped_rmdup = int(pysam.view("-c","-F","1028",bam_merged_path).rstrip())
 reads_num = reads_mapped + reads_unmapped
 
 
