@@ -193,4 +193,4 @@ bash scripts/run_snippy sample-name my-project path-to-contigs snippy-output num
 
 `sample-name` is defined by user. For  `my-project`, `num-scores`, `ref-genome`, check instructions in [Alignment](#alignment). `path-to-contigs` is the path to contigs file. `snippy-output` is the snippy output folder.
 
-The path to the output bam file is '`snippy-output`/snps.bam'. Then you can put this in [Variant calling](#variants-calling-and-assembly). **Warning: [Run metrics](#calculation-of-run-metrics) can not be run with contigs file.** Also, we suggest you create a separate working directory for contigs assembly to avoid messing files up.
+The path to the output bam file is '`snippy-output`/`sample-name`/snps.bam'. Then you can put this in [Variant calling](#variants-calling-and-assembly). **Warning: [Run metrics](#calculation-of-run-metrics) can not be run with contigs file.** Also, we suggest you create a separate working directory for contigs assembly to avoid messing files up.
