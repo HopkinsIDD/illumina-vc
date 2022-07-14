@@ -47,7 +47,7 @@ git clone https://github.com/HopkinsIDD/illumina-vc.git .
 
 ### Finding your raw data
 
-Some of the commands below require you to know where your raw Illumina data is stored. When you started your Illumina run, you selected a data folder in which to store the results. Figure out the path to your raw data and provide it below whenever the command calls for the **path-to-raw- data**.
+Some of the commands below require you to know where your raw Illumina data is stored. When you started your Illumina run, you selected a data folder in which to store the results. Figure out the path to your raw data and provide it below whenever the command calls for the **path-to-raw-data**.
 
 
 ### Determining the number of processors on your computer
