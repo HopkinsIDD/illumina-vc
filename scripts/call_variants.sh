@@ -75,12 +75,12 @@ fi
 
 # create bed file from bam file
 if [ ! -f $BAM_DIR/$SAMPLENAME.depth ];then
-	samtools depth -a $BAM > \
+	samtools depth -a $BAM -q 20 -Q 30 > \
 	$BAM_DIR/$SAMPLENAME.depth
 	touch check_tmp_variant/.$SAMPLENAME.bam_depth
 elif [ ! -e check_tmp_variant/.$SAMPLENAME.bam_depth ]; then
 	rm $BAM_DIR/$SAMPLENAME.depth
-	samtools depth -a $BAM > \
+	samtools depth -a $BAM -q 20 -Q 30 > \
 	$BAM_DIR/$SAMPLENAME.depth
 	touch check_tmp_variant/.$SAMPLENAME.bam_depth
 fi
@@ -132,7 +132,57 @@ elif [ ! -e check_tmp_variant/.$SAMPLENAME.vcf_bcftools_filt ]; then
 	touch check_tmp_variant/.$SAMPLENAME.vcf_bcftools_filt
 fi
 
+# mask bcftool filtered positions
+# concat bcftool filtered-masked positions with depth-masked bed file
 
+if [ ! -f $DIR/04_assembly/$SAMPLENAME.allmask.bed ]; then
+	bcftools filter --no-version -i "(INFO/AD[1])/(INFO/AD[0]+INFO/AD[1]) < $SNP_SUPPORT" \
+	$DIR/03_variants/$SAMPLENAME.bcftools.vcf -o $DIR/03_variants/$SAMPLENAME.bcftools.lowsupport.vcf
+	awk '(/^[^#]/ && length($4) == length($5)) {printf "%s\t%d\t%d\n", $1, $2 - 1, $2}' \
+	$DIR/03_variants/$SAMPLENAME.bcftools.lowsupport.vcf > $DIR/03_variants/$SAMPLENAME.lowsupport.bed
+
+	bcftools filter --no-version -i "INFO/ADF[1] < $REQ_STRAND_DEPTH || INFO/ADR[1] < $REQ_STRAND_DEPTH" \
+	$DIR/03_variants/$SAMPLENAME.bcftools.vcf -o $DIR/03_variants/$SAMPLENAME.bcftools.lowstranddepth.vcf
+	awk '(/^[^#]/ && length($4) == length($5)) {printf "%s\t%d\t%d\n", $1, $2 - 1, $2}' \
+	$DIR/03_variants/$SAMPLENAME.bcftools.lowstranddepth.vcf > $DIR/03_variants/$SAMPLENAME.lowstranddepth.bed
+
+
+	cat $DIR/03_variants/$SAMPLENAME.lowsupport.bed $DIR/03_variants/$SAMPLENAME.lowstranddepth.bed > \
+	$DIR/03_variants/$SAMPLENAME.vcffiltered.bed
+
+	cat $DIR/03_variants/$SAMPLENAME.vcffiltered.bed $DIR/04_assembly/$SAMPLENAME.depthmask.bed | \
+	uniq > $DIR/04_assembly/$SAMPLENAME.allmask.bed
+
+	touch check_tmp_variant/.$SAMPLENAME.all_mask_bed
+
+elif [ ! -e check_tmp_variant/.$SAMPLENAME.all_mask_bed ]; then
+
+	rm -f $DIR/03_variants/$SAMPLENAME.bcftools.lowsupport.vcf
+	rm -f $DIR/03_variants/$SAMPLENAME.lowsupport.bed
+	rm -f $DIR/03_variants/$SAMPLENAME.bcftools.lowstranddepth.vcf
+	rm -f $DIR/03_variants/$SAMPLENAME.lowstranddepth.bam_depth
+	rm -f $DIR/03_variants/$SAMPLENAME.vcffiltered.bed
+	rm -f $DIR/04_assembly/$SAMPLENAME.allmask.bed
+
+	bcftools filter --no-version -i "(INFO/AD[1])/(INFO/AD[0]+INFO/AD[1]) < $SNP_SUPPORT" \
+	$DIR/03_variants/$SAMPLENAME.bcftools.vcf -o $DIR/03_variants/$SAMPLENAME.bcftools.lowsupport.vcf
+	awk '(/^[^#]/ && length($4) == length($5)) {printf "%s\t%d\t%d\n", $1, $2 - 1, $2}' \
+	$DIR/03_variants/$SAMPLENAME.bcftools.lowsupport.vcf > $DIR/03_variants/$SAMPLENAME.lowsupport.bed
+
+	bcftools filter --no-version -i "INFO/ADF[1] < $REQ_STRAND_DEPTH || INFO/ADR[1] < $REQ_STRAND_DEPTH" \
+	$DIR/03_variants/$SAMPLENAME.bcftools.vcf -o $DIR/03_variants/$SAMPLENAME.bcftools.lowstranddepth.vcf
+	awk '(/^[^#]/ && length($4) == length($5)) {printf "%s\t%d\t%d\n", $1, $2 - 1, $2}' \
+	$DIR/03_variants/$SAMPLENAME.bcftools.lowstranddepth.vcf > $DIR/03_variants/$SAMPLENAME.lowstranddepth.bed
+
+
+	cat $DIR/03_variants/$SAMPLENAME.lowsupport.bed $DIR/03_variants/$SAMPLENAME.lowstranddepth.bed > \
+	$DIR/03_variants/$SAMPLENAME.vcffiltered.bed
+
+	cat $DIR/03_variants/$SAMPLENAME.vcffiltered.bed $DIR/04_assembly/$SAMPLENAME.depthmask.bed | \
+	uniq > $DIR/04_assembly/$SAMPLENAME.allmask.bed
+
+	touch check_tmp_variant/.$SAMPLENAME.all_mask_bed
+fi
 
 # left align and normalize indels
 # then remove insertions to avoid issues with multi-alignment later on

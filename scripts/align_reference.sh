@@ -87,12 +87,12 @@ for i in "${LARRAY[@]}"; do
 	if [ ! -f $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam ]; then
 		bwa mem -M -t $NUM_CORES $REF_GENOME $FASTQ/$SAMPLENAME\_$LANE\_R1_001.fastq.gz \
 		$FASTQ/$SAMPLENAME\_$LANE\_R2_001.fastq.gz > $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_map_sam_check
-	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE_map_sam_check ]; then
+		touch check_tmp_align/.$SAMPLENAME\_$LANE_\map_sam_check
+	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE\_map_sam_check ]; then
 		rm $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam
 		bwa mem -M -t $NUM_CORES $REF_GENOME $FASTQ/$SAMPLENAME\_$LANE\_R1_001.fastq.gz \
 		$FASTQ/$SAMPLENAME\_$LANE\_R2_001.fastq.gz > $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_map_sam_check
+		touch check_tmp_align/.$SAMPLENAME\_$LANE\_map_sam_check
 	fi
 
 	# convert SAM to BAM and fix read pairing information and flags
@@ -100,12 +100,12 @@ for i in "${LARRAY[@]}"; do
 	if [ ! -f $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam ]; then
 		samtools fixmate -O bam $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam \
 		$DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_sam_bam
-	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE_sam_bam ]; then
+		touch check_tmp_align/.$SAMPLENAME\_$LANE\_sam_bam
+	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE\_sam_bam ]; then
 		rm $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam
 		samtools fixmate -O bam $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sam \
 		$DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_sam_bam
+		touch check_tmp_align/.$SAMPLENAME\_$LANE\_sam_bam
 	fi
 
 
@@ -114,13 +114,13 @@ for i in "${LARRAY[@]}"; do
 		samtools sort -T $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped -O bam -@ $NUM_CORES \
 		-o $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sorted.bam \
 		$DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_sort_bam
-	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE_sort_bam ]; then
+		touch check_tmp_align/.$SAMPLENAME\_$LANE\_sort_bam
+	elif [ ! -e check_tmp_align/.$SAMPLENAME\_$LANE\_sort_bam ]; then
 		rm $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sorted.bam
 		samtools sort -T $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped -O bam -@ $NUM_CORES \
 		-o $DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.sorted.bam \
 		$DIR/01_mapped/$SAMPLENAME\_$LANE.mapped.bam
-		touch check_tmp_align/.$SAMPLENAME\_$LANE_sort_bam
+		touch check_tmp_align/.$SAMPLENAME\_$LANE\_sort_bam
 	fi
 
 done
