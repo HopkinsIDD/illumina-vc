@@ -179,7 +179,7 @@ elif [ ! -e check_tmp_variant/.$SAMPLENAME.all_mask_bed ]; then
 	$DIR/03_variants/$SAMPLENAME.vcffiltered.bed
 
 	cat $DIR/03_variants/$SAMPLENAME.vcffiltered.bed $DIR/04_assembly/$SAMPLENAME.depthmask.bed | \
-	uniq > $DIR/04_assembly/$SAMPLENAME.allmask.bed
+	sort -u > $DIR/04_assembly/$SAMPLENAME.allmask.bed
 
 	touch check_tmp_variant/.$SAMPLENAME.all_mask_bed
 fi
@@ -207,17 +207,17 @@ echo "CREATING CONSENSUS GENOME"
 
 if [ ! -f $DIR/04_assembly/$SAMPLENAME.bcftools.consensus.fasta ]; then
 	bcftools index --threads $NUM_CORES $DIR/03_variants/$SAMPLENAME.bcftools.filt.norm.vcf.gz
-	cat $REF_GENOME | bcftools consensus --mark-del N -m $DIR/04_assembly/$SAMPLENAME.depthmask.bed \
+	cat $REF_GENOME | bcftools consensus --mark-del N -m $DIR/04_assembly/$SAMPLENAME.allmask.bed \
 	$DIR/03_variants/$SAMPLENAME.bcftools.filt.norm.vcf.gz > \
 	$DIR/04_assembly/$SAMPLENAME.bcftools.consensus.fasta
 	touch check_tmp_variant/.$SAMPLENAME.bcftools_consensus_fasta
 elif [ ! -e check_tmp_variant/.$SAMPLENAME.bcftools_consensus_fasta ]; then
 	rm $DIR/04_assembly/$SAMPLENAME.bcftools.consensus.fasta
 	bcftools index --threads $NUM_CORES $DIR/03_variants/$SAMPLENAME.bcftools.filt.norm.vcf.gz
-	cat $REF_GENOME | bcftools consensus --mark-del N -m $DIR/04_assembly/$SAMPLENAME.depthmask.bed \
+	cat $REF_GENOME | bcftools consensus --mark-del N -m $DIR/04_assembly/$SAMPLENAME.allmask.bed \
 	$DIR/03_variants/$SAMPLENAME.bcftools.filt.norm.vcf.gz > \
 	$DIR/04_assembly/$SAMPLENAME.bcftools.consensus.fasta
-	touch check_tmp_variant/.$SAMPLENAME.bcftools_consensus
+	touch check_tmp_variant/.$SAMPLENAME.bcftools_consensus_fasta
 fi
 
 
